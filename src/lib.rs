@@ -1,4 +1,4 @@
-use std::io::{self};
+use std::io;
 use csv;
 
 type MyResult = Result<(), Box<dyn std::error::Error>>;
@@ -12,21 +12,19 @@ pub fn run() -> MyResult {
     // 抜き取り対象のフィールドが入力CSVの中で何番目の列なのかを検査
     // また、確実に入力CSVにも存在するフィールド名のみ収集する
     // つまり、コマンドライン引数には指定されたが実際にはないフィールド名は無視する
-    let mut header: Vec<String> = Vec::new();
     let mut fld_nums: Vec<usize> = Vec::new();
     for fld in flds.iter() {
         for (i, column) in rdr.headers()?.iter().enumerate() {
             if fld == column {
                 fld_nums.push(i);
-                header.push(column.to_string());
             }
         }
     }
     for result in rdr.records() {
-        let record_all = result?;
+        let record = result?;
         // コマンドライン引数で指定した順番でprintする
         for i in fld_nums.iter() {
-            println!("{}", record_all[*i].to_string());
+            println!("{}", record[*i].to_string());
         }
     }
     Ok(())
